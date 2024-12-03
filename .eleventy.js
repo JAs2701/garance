@@ -1,7 +1,7 @@
 module.exports=function(eleventyConfig) {
     return {
         dir: {
-            input: "src/_layout",
+            input: "src",
             output: "public",
         }
     }
