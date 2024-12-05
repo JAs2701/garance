@@ -1,10 +1,16 @@
 ---
 title: Archives Nationales
-layout: "base.njk"
+layout: "main.njk"
 ---
+
 
 <div class="row">
 	<div class="col-md">
-	    <h1 class="title-Header ">*G*raphe *A*rchivistique pour la *R*echerche, l'*A*ccès et la *N*avigation des *C*onnaissances *E*nhancées. </h1>
+	    <h1 class="title-Header ">Graphe Archivistique pour la Recherche, l'Accès et la Navigation des Connaissances Enhancées. </h1>
+        <ul>
+			{%- for item in metadata.scheme.graph -%}
+				<li><a>{{ item.dctitle | Label('fr') }}</a> <small class="numConcepts"> - {{ item.inverse_inScheme.length }} Concepts</small></li>
+			{%- endfor-%}
+		</ul>
     </div>
 </div>

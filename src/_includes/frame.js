@@ -5,6 +5,7 @@ const rdfParser = require("rdf-parse").default;
 // npm install rdf-serialize
 const rdfSerializer = require("rdf-serialize").default;
 // endpoint
+const stringToStream = require('streamify-string')
 
 const fs = require("fs");
 
@@ -15,14 +16,12 @@ AssetCache.concurrency = 4;
 
 module.exports = async function (inputRdfPath,inputFramingPath, MEMORYKEY) {
 
-	//console.log(site.ENDPOINT)
-
 	let inputRDF = fs.readFileSync(inputRdfPath,{ encoding: 'utf8', flag: 'r' });
 	let inputFRAMING = fs.readFileSync(inputFramingPath,{ encoding: 'utf8', flag: 'r' });
 	
 	// ********************** Process for convert a turtle file to JSON Framing **********************
-
-	// We convert the Turtle to an N-Quads string.
+	const stream = stringToStream(inputRDF);
+	// We convert the RDF to an N-Quads string.
 	const quadStream = rdfParser.parse(require('streamify-string')(inputRDF), {contentType: 'text/turtle', baseIRI: 'http://example.org'})
 	const textStream = rdfSerializer.serialize(quadStream, { contentType: 'application/n-quads' });
 	const nQuadsString = await streamToString(textStream);
@@ -30,20 +29,18 @@ module.exports = async function (inputRdfPath,inputFramingPath, MEMORYKEY) {
 	// We convert the RDF JSON-LD, which is JSON with semantics embedded.
 	const doc = await jsonld.fromRDF(nQuadsString, {format: 'application/n-quads'});
 	//console.log(framed)
-	/* Write jsonld file  
-	fs.writeFile('vocabularies_performing_arts.jsonld',JSON.stringify(doc),err => {
+	// Write jsonld file  
+	fs.writeFile('an_concepts.jsonld',JSON.stringify(doc),err => {
 		if (err) {
 			console.log(err);
 		} else {
 			console.log('ok');
 		}
 	});
-	*/
 	
-
+	
 	// We use the frame and the JSON-LD generated earlier to generate a new JSON-LD document based on the frame.
 	const framed = await jsonld.frame(doc, JSON.parse(inputFRAMING));
-	
 	
 	// ********************** Cache local **********************
 
@@ -62,7 +59,6 @@ module.exports = async function (inputRdfPath,inputFramingPath, MEMORYKEY) {
 	
 	//console.log("JSON Result")
 	//console.log(JSON.stringify(JsonResult))
-	
 	return JsonResult
 }
 
