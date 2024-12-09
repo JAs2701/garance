@@ -1,4 +1,4 @@
-name: Eleventy Build Web
+name: Eleventy Build GP
 on: [push]
 
 jobs:
