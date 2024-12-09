@@ -9,6 +9,10 @@ const { AssetCache } = require("@11ty/eleventy-fetch");
 const nunjucks = require('nunjucks');
 const EleventyBaseError = require("@11ty/eleventy/src/EleventyBaseError");
 
+/* Internationalization i18n : Jorge */
+const { EleventyI18nPlugin } = require("@11ty/eleventy");
+const i18n = require('eleventy-plugin-i18n');
+const translations = require('./src/_data/i18n');
 
 AssetCache.concurrency = 4;
 
@@ -20,9 +24,25 @@ module.exports = function (eleventyConfig) {
 		autoescape: false, // warning: don’t do this!
 	});
 
+  // Return the ID
+  eleventyConfig.addFilter("notation", async function (concept) {
+    return concept.split(":")[1];
+  });
+
+  eleventyConfig.addFilter("getId", async function (dataset,concept) {
+
+    console.log("***************"+ concept +"***************")
+    
+    const data = [dataset]
+    var result = data.find(x => x.id === concept)
+    const jsonResult = result["skos:inScheme"]
+    const reponse = jsonResult.split(":")[1]
+    console.log("========== "+reponse+" ==========")
+    
+    return reponse
+  });
 
   eleventyConfig.addFilter("getURL", async function (inputContext,concept) {
-
 
     const inputPrefix = concept.split(":")[0];
     const inputConcept = concept.split(":")[1];
@@ -30,12 +50,11 @@ module.exports = function (eleventyConfig) {
     const obj = JSON.parse(inputContext)
     const uriFound = JSON.stringify(obj, [inputPrefix])
     const objOutput = JSON.parse(uriFound)
-    return objOutput[inputPrefix]+inputConcept
+    return objOutput[inputPrefix]+inputConcept    
   });
 
   //
-  eleventyConfig.addFilter(
-        "relative",
+  eleventyConfig.addFilter("relative",
         (absoluteUrl, page) => {
           if (!absoluteUrl.startsWith('/')) {
             throw new Error('URL is already relative')
@@ -53,7 +72,9 @@ module.exports = function (eleventyConfig) {
         result = element['@value']
       }
     };
-    const output_Label = (result === "") ? arr['@value'] : result;     
+    
+    const output_Label = (result === "") ? arr['@value'][0] : result;
+    
     return output_Label;
   });
 
@@ -92,6 +113,12 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter('splitNameSpace', function (value) {
     return value.split(':')[1]
+  });
+
+  eleventyConfig.addFilter('splitGetTypeConcept', function (value) {
+    if (value.includes('/')){
+      return value.split('/')[1]
+    }
   });
 
   eleventyConfig.addShortcode("getSchemeDefinition", async function (jsonData) {
@@ -168,6 +195,20 @@ module.exports = function (eleventyConfig) {
       */
     }
     return codeHTML
+  });
+
+  
+  // internationalization 
+  eleventyConfig.addPlugin(EleventyI18nPlugin, {
+    defaultLanguage: 'fr', // Required
+    errorMode: 'allow-fallback' // Opting out of "strict"
+  });
+  // translation
+  eleventyConfig.addPlugin(i18n, {
+    translations,
+    fallbackLocales: {
+      'fr': 'en'
+    }
   });
 
   

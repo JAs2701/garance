@@ -27,6 +27,10 @@
       "@id" : "dc:title",
     	"@container" : "@set"      
     },
+    "dcdescription" : {
+      "@id" : "dc:description",
+    	"@container" : "@set"      
+    },
     "prefLabel":{ 
       "@id" : "skos:prefLabel",
       "@container" : "@set"
@@ -55,6 +59,9 @@
   "@explicit" : true,
   "type" : "ConceptScheme",
   "dctitle":{
+    "@explicit":true
+  },
+  "dcdescription": {
     "@explicit":true
   },
   "subject" : {

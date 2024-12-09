@@ -1,5 +1,5 @@
 [
     {
-        "ENDPOINT" : "https://www.performing-arts.ch/sparql"
+        "ENDPOINT" : "http://data.archives-nationales.culture.gouv.fr/"
     }
 ]

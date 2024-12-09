@@ -4,7 +4,7 @@ const fs = require("fs");
 
 
 // Read Files
-const TURTLE_FILE = "./src/_data/concepts_mini.ttl";
+const TURTLE_FILE = "./src/_data/an/concepts/concepts_mini.ttl";
 // Framing
 const FRAMING_FILE = "./src/_data/spa-skos-framing.json";
 // Cache Local
